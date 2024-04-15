@@ -32,66 +32,92 @@ class tkinterApp(tk.Tk):
     def run(self,str):
         os.system(str)
 
-tempvar = 5
+############
+#START PAGE#
+############
 
 class StartPage(tk.Frame):
     def __init__(self,parent,controller):
         tk.Frame.__init__(self,parent)
 
-        label = ttk.Label(self,text="Dice Math",font = LARGEFONT)
+    ############
+    #PAGE LABEL#
+    ############
 
+        label = ttk.Label(self,text="Dice Math",font = LARGEFONT)
         label.grid(row=0, column=0, padx=10, pady=10)
 
+    ############################################
+    #CHECKBOXES FOR SHARPSHOOTER AND STEADY AIM#
+    ############################################
+
         varShSh = tk.IntVar()
+
         varStAi = tk.IntVar()
 
-        e1_var = tk.IntVar()
+        cb_sharp = tk.Checkbutton(self, text="Use Sharpshooter", variable=varShSh, onvalue=1, offvalue=0)
+        cb_sharp.grid(row=2, column=0, padx=10, pady=10)
 
-        def input_to_var():
-                e1_var.get()
-                return(e1_var)
+        cb_steady = tk.Checkbutton(self, text="Use Steady Aim", variable=varStAi, onvalue=1, offvalue=0)
+        cb_steady.grid(row=3, column=0, padx=10, pady=10)
 
-        def print_var():
-            print(e1_var)
-
-        c1 = tk.Checkbutton(self, text="Use Sharpshooter", variable=varShSh, onvalue=1, offvalue=0)
-        c1.grid(row=1, column=0, padx=10, pady=10)
-
-        c2 = tk.Checkbutton(self, text="Use Steady Aim", variable=varStAi, onvalue=1, offvalue=0)
-        c2.grid(row=2, column=0, padx=10, pady=10)
+    ###########################
+    #BUTTON TO GO TO TEMP PAGE#
+    ###########################
 
         button1 = ttk.Button(self, text = "Go to Temp Page", command = lambda : controller.show_frame(Page1))
-        button1.grid(row=3, column=0, padx=10, pady=10)
+        button1.grid(row=1, column=0, padx=10, pady=10)
 
-        tk.Label(self, text="Number of Faces:").grid(row=4, column=0, padx=10, pady=10)
+    #######################
+    #DAMAGE DICE SELECTION#
+    #######################
 
-        e1 = tk.Entry(self, textvariable=e1_var)
-        e1.grid(row=4, column=1, padx=10, pady=10)
+        varNum = tk.IntVar()
+        varFaces = tk.IntVar()
 
-        button2 = ttk.Button(self, text="Enter", command=input_to_var)
-        button2.grid(row=4, column=2, padx=10, pady=10)
+        NUMOPTIONS = [1, 2]
+        FACEOPTIONS = [4, 6, 8, 10, 12]
 
-        button3 = tk.Button(self, text = "Print", command=print_var)
-        button3.grid(row=5, column=0, padx=10, pady=10)
+        tk.Label(self, text="Damage Dice:").grid(row=4, column=0, padx=5, pady=10)
+
+        om_num = OptionMenu(self, varNum, *NUMOPTIONS)
+        om_num.grid(row=4, column=1, padx=1, pady=10)
+
+        tk.Label(self, text="d").grid(row=4, column=2, padx=1, pady=10)
+
+        om_faces = OptionMenu(self, varFaces, *FACEOPTIONS)
+        om_faces.grid(row=4, column=3, padx=1, pady=10)
+
+    ##############
+    #TEST BUTTONS#
+    ##############
+
+        def print_vars():
+            print(varShSh.get())
+            print(varStAi.get())
+            print(varNum.get())
+            print(varFaces.get())
+
+        button_test = ttk.Button(self,text = "Test Button: Print Vars:", command = print_vars)
+        button_test.grid(row=10, column=0, padx=10, pady=10)
 
 
+
+###########
+#TEMP PAGE#
+###########
 
 class Page1(tk.Frame):
      
     def __init__(self, parent, controller):
-         
         tk.Frame.__init__(self, parent)
+
+    ############
+    #PAGE LABEL#
+    ############
+
         label = ttk.Label(self, text ="Temp Page", font = LARGEFONT)
         label.grid(row=0, column=1, padx=10, pady=10)
-
-        def print_var():
-            print(tempvar)
-
-        button1 = tk.Button(self, text = "<-", command = lambda : controller.show_frame(StartPage))
-        button1.grid(row=0, column=0, padx=10, pady=10)
-
-        button2 = tk.Button(self, text = "Print", command=print_var)
-        button2.grid(row=1, column=0, padx=10, pady=10)
 
 
 app=tkinterApp()
