@@ -1,35 +1,80 @@
 import numpy as np
 import scipy.signal
 
-arrd20 = np.empty(20)
-arr1 = np.empty(10)
-arr1.fill(1)
-arr2 = np.empty(10)
-arr2.fill(1)
-arr3 = scipy.signal.fftconvolve(arr1,arr2)/(np.size(arr1)*np.size(arr2))
-arr4 = np.empty(np.size(arr1)+np.size(arr2)-1)
 
-ac = 10
-mod = 3
-prof = 2
-expected_value = 0
-CtH = 0 #chance to hit
+#########################################################
+#BUILDS THE ARRAYS WITH PERCENT CHANCE OF DAMAGE OUTCOME#
+#########################################################
 
-for i in range(0,len(arrd20)):
-    arrd20[i] = i+1
+def build_arrDDC(DDF, ND):
+    if ND == 1:
+        arrDDC = np.empty(DDF)
+        arrDDC.fill(1/DDF)
+    elif ND == 2:
+        arrDD1 = np.empty(DDF)
+        arrDD1.fill(1)
+        arrDD2 = arrDD1
+        arrDDC = scipy.signal.fftconvolve(arrDD1,arrDD2)/(np.size(arrDD1)*np.size(arrDD2))
+    return(arrDDC)
 
-for i in range(0,len(arr4)):
-    arr4[i] = i+2+mod
-    expected_value = expected_value + arr4[i]*arr3[i]
+##################################################
+#BUILDS THE ARRAY WITH THE POSSIBLE DAMAGE VALUES#
+##################################################
 
-for i in range(0,len(arrd20)):
-    if arrd20[i] > 1:
-        if arrd20[i] == 20:
-            CtH = CtH + 1
-        elif arrd20[i]+mod+prof >= ac:
-            CtH = CtH + 1
+def build_arrDV(DDF, ND):
+    if ND == 1:
+        arrDV = np.empty(DDF)
+        for i in range(0,len(arrDV)):
+            arrDV[i] = i+1
+    elif ND == 2:
+        arrDV = np.empty(2*DDF-1)
+        for i in range(0,len(arrDV)):
+            arrDV[i] = i+2
+    return(arrDV)
 
-CtH = CtH/20
+################################################
+#CALCULATE THE EXPECTATION VALUE OF DAMAGE DICE#
+################################################
 
-print("Effective damage of 2d10 against AC of 10:")
-print(CtH*expected_value)
+def calc_EDV(DDF, ND, AM):
+    EDV = 0.
+    arrDV = build_arrDV(DDF,ND)
+    arrDDC = build_arrDDC(DDF,ND)
+    for i in range(0,len(arrDDC)):
+        EDV = EDV + arrDDC[i]*arrDV[i]
+    EDV = EDV + AM
+    EDV = EDV + EDV*0.05
+    return(EDV)
+
+#########################################################################
+#CALCULATE THE CHANCE TO HIT GIVEN ARMOR CLASS, ATTACK MOD, AND PROF MOD#
+#########################################################################
+
+def calc_CtH(AC, AM, PM):
+    EAC = AC - AM - PM
+    if EAC < 2:
+        EAC = 2
+    elif EAC > 20:
+        EAC = 20
+    CtH = (20 - (EAC-1))*0.05
+    return(CtH)
+
+#########################
+#CALCULATE EFFECTIVE DPR#
+#########################
+
+def calc_EDPR(AC, AM, PM, Sharp, Steady, nAtk, nFaces, nDice):
+    DM = AM
+
+    if Sharp:
+        AM = AM - 5
+        DM = DM + 10
+
+    if Steady:
+        AM = AM + 5
+        nAtk = nAtk/2
+
+    CtH = calc_CtH(AC, AM, PM)
+    EDV = calc_EDV(nFaces, nDice, DM)
+    EDPR = (EDV * nAtk) * CtH
+    return(EDPR)
