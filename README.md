@@ -1,9 +1,11 @@
 WIP- project to learn Python and TKinter
 
-convolve.py functions, but is rudimentary.
+convolve.py contains all functions related to calculating the Expected Damage per Round.
 
-Fixed issue with not being able to pull values from interface
+Overall, program is capable of calculating EDPR
 
-Add field for AC, attack modifier, and damage modifier.
+  Add error message for when EDPR can't be calculated (like when the damage dice settings are left blank)
 
-  After adding these, should be good to start doing stats and convolutions
+  Add graphing capabilities. Graph EDPR against AC for given settings.
+
+    Add ability to save graphs? Plot multiple at once to compare Steady Aim, Sharpshooter, neither, or both?
